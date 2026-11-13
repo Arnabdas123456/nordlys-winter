@@ -1,0 +1,37 @@
+{
+  "name": "nordlys-winter-monorepo",
+  "author": "Arnab Das",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Nordlys — Procedural Norway Aurora Borealis NPM Package + Next.js Arctic Winter Experience",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace=@nordlys/demo",
+    "build": "npm run build --workspace=nordlys-winter && npm run build --workspace=@nordlys/demo",
+    "build:package": "npm run build --workspace=nordlys-winter",
+    "build:demo": "npm run build --workspace=@nordlys/demo",
+    "test": "vitest run",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "lint": "eslint",
+    "pack:check": "npm pack --workspace=nordlys-winter --dry-run"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@types/three": "^0.170.0",
+    "tsup": "^8.3.6",
+    "typescript": "^5.7.3",
+    "vite": "^8.3.6",
+    "vitest": "^2.1.0 || ^3.0.0 || *"
+  },
+  "engines": {
+    "node": ">=20.9.0"
+  },
+  "dependencies": {
+    "nordlys-winter": "^1.0.1"
+  }
+}

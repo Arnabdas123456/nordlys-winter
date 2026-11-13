@@ -1,0 +1,104 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --background: #06101f;
+    --foreground: #f8fafc;
+    --primary: #00ff80;
+    --primary-foreground: #020617;
+    --muted: #0f1f36;
+    --muted-foreground: #94a3b8;
+    --border: rgba(255, 255, 255, 0.14);
+  }
+
+  * {
+    border-color: var(--border);
+  }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    min-height: 100vh;
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    overflow-x: hidden;
+  }
+}
+
+/* Glassmorphism glass card utilities */
+.glass-panel {
+  background: rgba(6, 16, 31, 0.78);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.glass-nav {
+  background: rgba(6, 16, 31, 0.72);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(37, 229, 209, 0.12);
+}
+
+/* Subtle Arctic emerald selection */
+::selection {
+  background: rgba(0, 255, 128, 0.3);
+  color: #ffffff;
+}
+
+/* Cinematic Nordlys Loading Screen Animations */
+@keyframes loadingSnowDrift {
+  0% {
+    transform: translateY(-20px) translateX(0) rotate(0deg);
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.85;
+  }
+  85% {
+    opacity: 0.85;
+  }
+  100% {
+    transform: translateY(105vh) translateX(35px) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+@keyframes auroraSway {
+  0%, 100% {
+    transform: scale(1) translateY(0) rotate(0deg);
+    opacity: 0.38;
+  }
+  50% {
+    transform: scale(1.18) translateY(-25px) rotate(3deg);
+    opacity: 0.65;
+  }
+}
+
+@keyframes shimmerProgress {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(250%);
+  }
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 25px rgba(0, 255, 128, 0.25), 0 0 50px rgba(37, 229, 209, 0.2);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 45px rgba(0, 255, 128, 0.5), 0 0 80px rgba(117, 85, 217, 0.3);
+    transform: scale(1.04);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reduced-motion-stop {
+    animation: none !important;
+  }
+}

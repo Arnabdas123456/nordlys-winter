@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json.schemastore.org/mcp-config.json",
+  "mcpServers": {
+    "context7": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@upstash/context7-mcp"
+      ],
+      "description": "Up-to-date documentation for Next.js, Three.js, React Three Fiber, and Drei"
+    },
+    "playwright": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@executeautomation/playwright-mcp-server"
+      ],
+      "description": "Browser automation and testing for Next.js demo website"
+    },
+    "gemini-docs": {
+      "command": "gemini",
+      "args": [
+        "mcp"
+      ],
+      "description": "Google developer and Gemini documentation integration"
+    }
+  }
+}

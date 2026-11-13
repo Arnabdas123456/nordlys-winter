@@ -1,0 +1,75 @@
+{
+  "name": "nordlys-winter",
+  "version": "1.0.1",
+  "description": "Procedural Norwegian Aurora Borealis & Arctic Winter 3D Experience for React Three Fiber",
+  "author": "Arnab Das",
+  "license": "MIT",
+  "private": false,
+  "sideEffects": [
+    "./dist/styles.css",
+    "./src/styles/index.css"
+  ],
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./styles.css": "./dist/styles.css"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --root ../..",
+    "clean": "rimraf dist"
+  },
+  "keywords": [
+    "nordlys",
+    "aurora-borealis",
+    "northern-lights",
+    "norway",
+    "tromso",
+    "glsl",
+    "shader",
+    "threejs",
+    "react-three-fiber",
+    "r3f",
+    "winter",
+    "snowfall",
+    "snowman",
+    "3d",
+    "react-component"
+  ],
+  "peerDependencies": {
+    "@react-three/fiber": ">=8.0.0 || >=9.0.0",
+    "react": ">=18.0.0 || >=19.0.0",
+    "react-dom": ">=18.0.0 || >=19.0.0",
+    "three": ">=0.150.0"
+  },
+  "peerDependenciesMeta": {
+    "@react-three/drei": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@react-three/drei": "^9.120.0 || ^10.7.9",
+    "@react-three/fiber": "^8.17.10 || ^9.8.2",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@types/three": "^0.170.0 || ^0.187.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "three": "^0.170.0 || ^0.187.0",
+    "tsup": "^8.3.6",
+    "typescript": "^5.7.3"
+  }
+}
