@@ -10,7 +10,7 @@ export function MusicPlayer() {
   const { isPlaying, togglePlay, title, artist } = useAudio();
 
   return (
-    <div className="fixed bottom-14 right-4 lg:bottom-6 lg:right-6 z-40 pointer-events-auto">
+    <div className="fixed bottom-16 right-3 sm:bottom-6 sm:right-6 z-40 pointer-events-auto">
       {expanded ? (
         <div className="animate-in fade-in zoom-in-95 duration-200">
           <AudioControls onClose={() => setExpanded(false)} />

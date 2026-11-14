@@ -116,8 +116,9 @@ function GLBSnowman({
 
     clone.traverse((child) => {
       if (child instanceof THREE.Mesh) {
-        child.castShadow = true;
-        child.receiveShadow = true;
+        // Contact shadow is rendered via procedural shadowAssets plane; disable heavy dynamic shadow maps
+        child.castShadow = false;
+        child.receiveShadow = false;
       }
     });
 
@@ -138,6 +139,10 @@ function GLBSnowman({
         // Ignore if capture was already released
       }
       activePointerIdRef.current = null;
+    }
+
+    if (gl.domElement) {
+      gl.domElement.style.touchAction = "auto";
     }
 
     onDragChange?.(false);
@@ -284,6 +289,10 @@ function GLBSnowman({
       } catch {
         // Ignore if pointer capture is unsupported
       }
+    }
+
+    if (gl.domElement) {
+      gl.domElement.style.touchAction = "none";
     }
 
     onDragChange?.(true);
@@ -482,8 +491,7 @@ function GLBSnowman({
           <primitive object={normalizedScene} />
         </group>
         {/* Warm gentle key light specifically highlighting the Snowman's festive features */}
-        <pointLight position={[0, 1.2, 1.5]} color="#fff7ed" intensity={1.5} distance={5} decay={2} />
-        <pointLight position={[0.8, 0.6, 0.8]} color="#fed7aa" intensity={1.0} distance={4} decay={2} />
+        <pointLight position={[0.2, 1.2, 1.4]} color="#fff7ed" intensity={1.7} distance={5.5} decay={2} />
       </group>
     </group>
   );

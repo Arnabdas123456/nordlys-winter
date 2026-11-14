@@ -73,6 +73,7 @@ export function useSnowfall({
   }, [count]);
 
   useFrame((_, delta) => {
+    if (typeof document !== "undefined" && document.hidden) return;
     if (!pointsRef.current) return;
     const geo = pointsRef.current.geometry;
     const posAttr = geo.getAttribute("position") as THREE.BufferAttribute;
@@ -87,32 +88,45 @@ export function useSnowfall({
     const activeWind = blizzardMode ? wind * 2.2 + 0.4 : wind;
 
     const clampedCount = Math.min(MAX_SNOW_PARTICLES, count);
+    const speedFactor = activeSpeed * dt * 4.2;
+    const windStep = activeWind * 0.12 * (dt * 3.0);
+    const windSwayMul = 0.03 * activeWind * (dt * 3.0);
+    const halfWidth = areaWidth * 0.5;
+    const boundLimit = halfWidth + 5;
 
     for (let i = 0; i < clampedCount; i++) {
       const i3 = i * 3;
 
       // Vertical falling speed with individual particle weight
-      array[i3 + 1] -= velocities[i3 + 1] * activeSpeed * dt * 4.2;
+      array[i3 + 1] -= velocities[i3 + 1] * speedFactor;
+      const y = array[i3 + 1];
 
       // Horizontal wind drift and organic swirling turbulence
-      const sway = Math.sin(array[i3 + 1] * 0.4 + i * 0.1) * 0.03 * activeWind;
-      array[i3] += (activeWind * 0.12 + sway) * (dt * 60 * 0.05);
-      array[i3 + 2] += Math.cos(array[i3 + 1] * 0.3 + i * 0.05) * 0.02;
+      const sway = Math.sin(y * 0.4 + (i & 31) * 0.2) * windSwayMul;
+      array[i3] += windStep + sway;
+      array[i3 + 2] += sway * 0.4;
 
       // Recycle snowflake when it passes below ground level
-      if (array[i3 + 1] < minY) {
+      if (y < minY) {
         array[i3 + 1] = maxY;
         array[i3] = (Math.random() - 0.5) * areaWidth;
         array[i3 + 2] = (Math.random() - 0.5) * areaDepth;
-      }
-
-      // Recycle horizontally if drifted outside bounds
-      if (Math.abs(array[i3]) > areaWidth / 2 + 5) {
-        array[i3] = -Math.sign(array[i3]) * (areaWidth / 2);
+      } else if (Math.abs(array[i3]) > boundLimit) {
+        // Recycle horizontally if drifted outside bounds
+        array[i3] = -Math.sign(array[i3]) * halfWidth;
       }
     }
 
+    // Only upload active particle slice to GPU instead of full 10,000 floats
     posAttr.needsUpdate = true;
+    const attr = posAttr as any;
+    if (typeof attr.addUpdateRange === "function") {
+      attr.clearUpdateRanges?.();
+      attr.addUpdateRange(0, clampedCount * 3);
+    } else if (attr.updateRange) {
+      attr.updateRange.offset = 0;
+      attr.updateRange.count = clampedCount * 3;
+    }
   });
 
   return { pointsRef, positions, sizes, currentSpeedRef };

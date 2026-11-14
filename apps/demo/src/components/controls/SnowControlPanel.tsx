@@ -25,6 +25,7 @@ export function SnowControlPanel({ onClose }: SnowControlPanelProps) {
     northernLightsEnabled,
     auroraIntensity,
     qualityPreset,
+    effectiveQuality,
     snowmanPosition,
     setSnowfallEnabled,
     setSnowSpeedLevel,
@@ -37,7 +38,7 @@ export function SnowControlPanel({ onClose }: SnowControlPanelProps) {
   } = useWinterStore();
 
   return (
-    <div className="fixed top-20 right-4 sm:right-6 z-50 w-[310px] max-w-[calc(100vw-2rem)] max-h-[calc(100vh-170px)] overflow-y-auto bg-[#06101f]/92 backdrop-blur-2xl border border-cyan-300/20 rounded-3xl p-5 shadow-[0_20px_50px_rgba(0,0,0,0.75)] text-white pointer-events-auto animate-in fade-in slide-in-from-right-4 duration-300">
+    <div className="fixed top-16 sm:top-20 right-2 sm:right-6 z-50 w-[310px] max-w-[calc(100vw-1rem)] max-h-[min(540px,calc(100vh-5rem))] overflow-y-auto overscroll-contain bg-[#06101f]/94 backdrop-blur-2xl border border-cyan-300/20 rounded-3xl p-4 sm:p-5 shadow-[0_20px_50px_rgba(0,0,0,0.75)] text-white pointer-events-auto animate-in fade-in slide-in-from-right-4 duration-300 touch-pan-y">
       {/* Header */}
       <div className="flex items-center justify-between pb-3.5 border-b border-white/10 mb-4">
         <div className="flex items-center gap-2">
@@ -152,14 +153,16 @@ export function SnowControlPanel({ onClose }: SnowControlPanelProps) {
         <div className="pt-2 border-t border-white/10 space-y-2">
           <div className="flex justify-between text-xs text-blue-200">
             <span>Graphics Quality</span>
-            <span className="font-mono text-amber-300 uppercase">{qualityPreset}</span>
+            <span className="font-mono text-amber-300 uppercase">
+              {qualityPreset === "auto" ? `Auto (${effectiveQuality})` : qualityPreset}
+            </span>
           </div>
-          <div className="grid grid-cols-3 gap-1.5">
-            {(["low", "medium", "high"] as const).map((q) => (
+          <div className="grid grid-cols-4 gap-1">
+            {(["auto", "low", "medium", "high"] as const).map((q) => (
               <button
                 key={q}
                 onClick={() => setQualityPreset(q)}
-                className={`py-1.5 rounded-xl text-[11px] font-semibold uppercase transition-all cursor-pointer ${
+                className={`py-1.5 rounded-xl text-[10px] font-semibold uppercase transition-all cursor-pointer ${
                   qualityPreset === q
                     ? "bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 font-bold shadow-md shadow-amber-400/20"
                     : "bg-white/10 hover:bg-white/15 text-white/80"

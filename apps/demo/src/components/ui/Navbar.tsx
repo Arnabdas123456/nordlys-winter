@@ -56,7 +56,7 @@ export function Navbar({ onToggleControls, controlsOpen }: NavbarProps) {
           {/* Scene Controls Toggle */}
           <button
             onClick={onToggleControls}
-            className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 rounded-xl text-[11px] sm:text-xs font-semibold backdrop-blur-xl border transition-all cursor-pointer shadow-lg ${
+            className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-xl text-[11px] sm:text-xs font-semibold backdrop-blur-xl border transition-all cursor-pointer shadow-lg ${
               controlsOpen
                 ? "bg-amber-400 text-slate-950 border-amber-300 shadow-amber-400/30 font-bold"
                 : "bg-[#06101f]/60 hover:bg-white/15 border-cyan-300/20 text-white"
@@ -71,7 +71,7 @@ export function Navbar({ onToggleControls, controlsOpen }: NavbarProps) {
           {/* Music Toggle */}
           <button
             onClick={togglePlay}
-            className={`flex items-center gap-2 px-3 sm:px-3.5 py-2 rounded-xl text-xs font-semibold backdrop-blur-xl border transition-all cursor-pointer shadow-lg ${
+            className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs font-semibold backdrop-blur-xl border transition-all cursor-pointer shadow-lg ${
               isPlaying
                 ? "bg-emerald-500/20 text-emerald-200 border-emerald-400/40 shadow-emerald-500/20"
                 : "bg-[#06101f]/60 hover:bg-white/15 border-white/20 text-white"

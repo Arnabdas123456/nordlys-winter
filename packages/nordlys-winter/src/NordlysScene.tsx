@@ -1,8 +1,13 @@
-import React, { Suspense, useEffect, useState } from "react";
+import React, { Suspense, useEffect, useMemo, useState } from "react";
 import * as THREE from "three";
 import { Canvas } from "@react-three/fiber";
 import type { NordlysSceneProps } from "./types";
-import { QUALITY_CONFIGS, isWebGLAvailable } from "./utils/performance";
+import {
+  QUALITY_CONFIGS,
+  getQualityConfig,
+  isMobileDevice,
+  isWebGLAvailable
+} from "./utils/performance";
 import { initThreeLogger } from "./utils/timer";
 import { Snowfall } from "./components/Snowfall";
 import { Snowman } from "./components/Snowman";
@@ -52,14 +57,19 @@ export function NordlysScene({
 }: NordlysSceneProps) {
   const [mounted, setMounted] = useState(false);
   const [hasWebGL, setHasWebGL] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     initThreeLogger();
     setMounted(true);
     setHasWebGL(isWebGLAvailable());
+    setIsMobile(isMobileDevice());
   }, []);
 
-  const qualityConfig = QUALITY_CONFIGS[quality] || QUALITY_CONFIGS.high;
+  const qualityConfig = useMemo(
+    () => getQualityConfig(quality, isMobile),
+    [quality, isMobile]
+  );
   const effectiveSnowCount = Math.floor(snowDensity * qualityConfig.particleMultiplier);
 
   // Fallback for SSR or non-WebGL environments
@@ -108,10 +118,10 @@ export function NordlysScene({
         }}
         camera={{ position: [0, 1.45, 7.0], fov: 45 }}
         dpr={qualityConfig.dpr}
-        shadows={qualityConfig.shadows ? { type: THREE.PCFShadowMap } : false}
+        shadows={qualityConfig.shadows && !isMobile ? { type: THREE.PCFShadowMap } : false}
         onCreated={({ gl }) => {
           gl.setClearColor(0x000000, 0);
-          if (gl.shadowMap) {
+          if (gl.shadowMap && qualityConfig.shadows && !isMobile) {
             gl.shadowMap.type = THREE.PCFShadowMap;
           }
         }}
@@ -119,11 +129,13 @@ export function NordlysScene({
           alpha: true,
           premultipliedAlpha: true,
           antialias: qualityConfig.antialias,
-          powerPreference: "high-performance"
+          powerPreference: isMobile ? "default" : "high-performance",
+          stencil: false,
+          depth: true
         }}
       >
         <Suspense fallback={null}>
-          <SceneRig cameraMovement={cameraMovement}>
+          <SceneRig cameraMovement={cameraMovement && (!isMobile || quality === "high")}>
             {/* 1. Arctic Sky Atmosphere: Stars, Procedural Tromso Aurora & Lighting */}
             <AuroraEnvironment
               theme={theme}

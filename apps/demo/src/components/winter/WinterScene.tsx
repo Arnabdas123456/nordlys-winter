@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useEffect, useMemo, Suspense } from "react";
+import React, { useEffect, useMemo, useRef, Suspense } from "react";
 import * as THREE from "three";
-import { useThree } from "@react-three/fiber";
+import { useThree, useFrame } from "@react-three/fiber";
 import { NordlysScene } from "nordlys-winter";
 import { useWinterStore } from "../../stores/winter-store";
 import { Snowman } from "./Snowman";
@@ -13,6 +13,56 @@ import {
 
 interface WinterSceneProps {
   onSceneReady?: () => void;
+}
+
+// Lightweight adaptive performance monitor: steps down quality on sustained low frame rates
+function AdaptivePerformanceWatcher() {
+  const { qualityPreset, stepDownQuality, stepUpQuality } = useWinterStore();
+  const lastCheckTimeRef = useRef(performance.now());
+  const frameCountRef = useRef(0);
+  const consecutiveLowFpsCountRef = useRef(0);
+  const consecutiveHighFpsCountRef = useRef(0);
+  const lastQualityChangeTimeRef = useRef(performance.now());
+
+  useFrame(() => {
+    if (qualityPreset !== "auto") return;
+    frameCountRef.current++;
+    const now = performance.now();
+    const elapsed = now - lastCheckTimeRef.current;
+
+    // Evaluate every 1.5s
+    if (elapsed >= 1500) {
+      const fps = (frameCountRef.current / elapsed) * 1000;
+      frameCountRef.current = 0;
+      lastCheckTimeRef.current = now;
+
+      // Minimum 8s cooldown between automatic quality adjustments to prevent rapid flapping
+      if (now - lastQualityChangeTimeRef.current < 8000) return;
+
+      if (fps < 27) {
+        consecutiveLowFpsCountRef.current++;
+        consecutiveHighFpsCountRef.current = 0;
+        if (consecutiveLowFpsCountRef.current >= 2) {
+          stepDownQuality();
+          lastQualityChangeTimeRef.current = now;
+          consecutiveLowFpsCountRef.current = 0;
+        }
+      } else if (fps >= 56) {
+        consecutiveHighFpsCountRef.current++;
+        consecutiveLowFpsCountRef.current = 0;
+        if (consecutiveHighFpsCountRef.current >= 4) {
+          stepUpQuality();
+          lastQualityChangeTimeRef.current = now;
+          consecutiveHighFpsCountRef.current = 0;
+        }
+      } else {
+        consecutiveLowFpsCountRef.current = 0;
+        consecutiveHighFpsCountRef.current = 0;
+      }
+    }
+  });
+
+  return null;
 }
 
 // Responsive camera framing aligned to the Christmas village photograph horizon & street perspective
@@ -77,6 +127,7 @@ function ResponsiveSceneContent({ onSceneReady }: { onSceneReady?: () => void })
         onPositionSave={saveSnowmanPosition}
       />
 
+      <AdaptivePerformanceWatcher />
       <SceneReadyNotifier onSceneReady={onSceneReady} />
     </Suspense>
   );
@@ -89,13 +140,15 @@ export function WinterScene({ onSceneReady }: WinterSceneProps) {
     snowfallEnabled,
     snowSpeedLevel,
     snowDensity,
-    qualityPreset,
+    effectiveQuality,
+    initDeviceCapability,
     hydrateSnowmanPosition
   } = useWinterStore();
 
   useEffect(() => {
+    initDeviceCapability();
     hydrateSnowmanPosition();
-  }, [hydrateSnowmanPosition]);
+  }, [initDeviceCapability, hydrateSnowmanPosition]);
 
   return (
     <NordlysScene
@@ -117,7 +170,7 @@ export function WinterScene({ onSceneReady }: WinterSceneProps) {
       showCabins={false}
       showMoon={false}
       cameraMovement={false}
-      quality={qualityPreset}
+      quality={effectiveQuality}
       className="w-full h-full"
       fallback={<div className="w-full h-full" />}
     >

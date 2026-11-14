@@ -25,7 +25,14 @@ export { useCamera } from "./hooks/useCamera";
 export { useWinterAnimation } from "./hooks/useWinterAnimation";
 
 // Utilities
-export { isWebGLAvailable, prefersReducedMotion, QUALITY_CONFIGS } from "./utils/performance";
+export {
+  isWebGLAvailable,
+  prefersReducedMotion,
+  isMobileDevice,
+  getAdaptiveDpr,
+  getQualityConfig,
+  QUALITY_CONFIGS
+} from "./utils/performance";
 export { disposeObject } from "./utils/cleanup";
 export { randomRange, randomChoice, randomVectorInBox } from "./utils/random";
 export { initThreeLogger } from "./utils/timer";

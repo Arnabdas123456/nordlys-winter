@@ -1,5 +1,6 @@
 import { create } from "zustand";
-import type { QualityPreset } from "../types";
+import type { QualityPreset, RenderQuality } from "../types";
+import { isMobileDevice } from "nordlys-winter";
 
 export const SNOWMAN_POSITION_STORAGE_KEY = "nordlys:snowman:position";
 
@@ -21,8 +22,10 @@ export interface WinterState {
   snowSpeedLevel: number; // 1 to 10
   snowDensity: number; // 500 to 10000
 
-  // Quality Preset
-  qualityPreset: QualityPreset;
+  // Quality Preset & Device Capabilities
+  qualityPreset: QualityPreset; // "auto" | "low" | "medium" | "high"
+  effectiveQuality: RenderQuality; // actual rendering tier: "low" | "medium" | "high"
+  isMobile: boolean;
 
   // Direct Snowman Dragging & Saved Position
   snowmanPosition: [number, number, number] | null;
@@ -36,6 +39,9 @@ export interface WinterState {
   setSnowSpeedLevel: (level: number) => void;
   setSnowDensity: (density: number) => void;
   setQualityPreset: (preset: QualityPreset) => void;
+  stepDownQuality: () => void;
+  stepUpQuality: () => void;
+  initDeviceCapability: () => void;
   resetDefaults: () => void;
 
   // Snowman Position Actions
@@ -51,7 +57,9 @@ const DEFAULT_WINTER_STATE = {
   snowfallEnabled: true,
   snowSpeedLevel: 3,
   snowDensity: 3000,
-  qualityPreset: "high" as QualityPreset
+  qualityPreset: "auto" as QualityPreset,
+  effectiveQuality: "high" as RenderQuality,
+  isMobile: false
 };
 
 export const useWinterStore = create<WinterState>((set, get) => ({
@@ -61,6 +69,26 @@ export const useWinterStore = create<WinterState>((set, get) => ({
   isDraggingSnowman: false,
   snowmanPlacementHydrated: false,
 
+  initDeviceCapability: () => {
+    if (typeof window === "undefined") return;
+    const mobile = isMobileDevice();
+    const currentPreset = get().qualityPreset;
+    
+    // Auto preset configures optimal mobile vs desktop baseline
+    if (currentPreset === "auto") {
+      set({
+        isMobile: mobile,
+        effectiveQuality: mobile ? "medium" : "high",
+        snowDensity: mobile ? 1200 : 3000
+      });
+    } else {
+      set({
+        isMobile: mobile,
+        effectiveQuality: currentPreset as RenderQuality
+      });
+    }
+  },
+
   setNorthernLightsEnabled: (northernLightsEnabled) => set({ northernLightsEnabled }),
   setAuroraIntensity: (auroraIntensity) =>
     set({ auroraIntensity: Math.max(0, Math.min(1, auroraIntensity)) }),
@@ -69,8 +97,47 @@ export const useWinterStore = create<WinterState>((set, get) => ({
     set({ snowSpeedLevel: Math.max(1, Math.min(10, Math.round(level))) }),
   setSnowDensity: (snowDensity) =>
     set({ snowDensity: Math.max(500, Math.min(10000, Math.round(snowDensity))) }),
-  setQualityPreset: (qualityPreset) => set({ qualityPreset }),
-  resetDefaults: () => set({ ...DEFAULT_WINTER_STATE }),
+    
+  setQualityPreset: (qualityPreset) => {
+    const mobile = get().isMobile;
+    let effective: RenderQuality = "high";
+    if (qualityPreset === "auto") {
+      effective = mobile ? "medium" : "high";
+    } else {
+      effective = qualityPreset;
+    }
+    set({ qualityPreset, effectiveQuality: effective });
+  },
+
+  stepDownQuality: () => {
+    const { qualityPreset, effectiveQuality } = get();
+    if (qualityPreset !== "auto") return; // Only auto adjusts dynamically
+    if (effectiveQuality === "high") {
+      set({ effectiveQuality: "medium" });
+    } else if (effectiveQuality === "medium") {
+      set({ effectiveQuality: "low" });
+    }
+  },
+
+  stepUpQuality: () => {
+    const { qualityPreset, effectiveQuality, isMobile } = get();
+    if (qualityPreset !== "auto") return;
+    if (effectiveQuality === "low") {
+      set({ effectiveQuality: "medium" });
+    } else if (effectiveQuality === "medium" && !isMobile) {
+      set({ effectiveQuality: "high" });
+    }
+  },
+
+  resetDefaults: () => {
+    const mobile = get().isMobile;
+    set({
+      ...DEFAULT_WINTER_STATE,
+      isMobile: mobile,
+      effectiveQuality: mobile ? "medium" : "high",
+      snowDensity: mobile ? 1200 : 3000
+    });
+  },
 
   setIsDraggingSnowman: (isDraggingSnowman) => set({ isDraggingSnowman }),
 

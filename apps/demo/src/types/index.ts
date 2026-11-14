@@ -1,4 +1,5 @@
-export type QualityPreset = "low" | "medium" | "high";
+export type QualityPreset = "auto" | "low" | "medium" | "high";
+export type RenderQuality = "low" | "medium" | "high";
 export type ThemePreset = "nordlys" | "lapland" | "twilight" | "midnight";
 
 export interface SceneSettings {

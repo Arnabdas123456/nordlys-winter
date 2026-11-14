@@ -93,11 +93,19 @@ export const AURORA_FRAGMENT_SHADER = /* glsl */ `
     if (intensityVal <= 0.001) discard;
 
     vec2 uv = vUv;
+
+    // Early boundary discard to eliminate fragment shader workload outside visible curtain bounds
+    float horizFade = smoothstep(0.0, 0.20, uv.x) * smoothstep(1.0, 0.80, uv.x);
+    if (horizFade <= 0.004) discard;
+    if (uv.y <= 0.015 || uv.y >= 0.985) discard;
+
     float t = uTime * uSpeed;
 
     // 1. Domain-warped organic curtain structure (continuous horizontal & vertical drift)
     float macroFlow = fbm(vec2(uv.x * 2.5 - t * 0.13 + uLayerOffset, uv.y * 0.9 + t * 0.035));
-    float microFlow = fbm(vec2(uv.x * 5.8 + t * 0.17 + macroFlow * 1.35, uv.y * 1.9 - t * 0.065));
+    float microFlow = uOctaves > 2.5
+      ? fbm(vec2(uv.x * 5.8 + t * 0.17 + macroFlow * 1.35, uv.y * 1.9 - t * 0.065))
+      : valueNoise(vec2(uv.x * 4.2 + t * 0.15 + macroFlow, uv.y * 1.6 - t * 0.05));
 
     // 2. Vertically waving light rays shimmering along the magnetic curtain
     float raySway = sin(uv.y * 3.2 - t * 0.75 + uLayerOffset) * 0.28;
@@ -114,9 +122,6 @@ export const AURORA_FRAGMENT_SHADER = /* glsl */ `
     float lowerSkirt = smoothstep(baseEdge - 0.04, baseEdge + 0.09, uv.y);
     float normalizedH = clamp((uv.y - baseEdge) / max(0.06, 1.0 - baseEdge), 0.0, 1.0);
     float upperFade = pow(1.0 - normalizedH, 1.55);
-
-    // Soft outer fade at horizontal ends so no rectangular edges ever appear
-    float horizFade = smoothstep(0.0, 0.22, uv.x) * smoothstep(1.0, 0.78, uv.x);
 
     // Natural variation in curtain brightness across the sky
     float brightBurst = 0.5 + 0.8 * smoothstep(0.3, 0.86, microFlow);
