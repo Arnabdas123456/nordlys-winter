@@ -38,7 +38,7 @@ export function SnowControlPanel({ onClose }: SnowControlPanelProps) {
   } = useWinterStore();
 
   return (
-    <div className="fixed top-16 sm:top-20 right-2 sm:right-6 z-50 w-[310px] max-w-[calc(100vw-1rem)] max-h-[min(540px,calc(100vh-5rem))] overflow-y-auto overscroll-contain bg-[#06101f]/94 backdrop-blur-2xl border border-cyan-300/20 rounded-3xl p-4 sm:p-5 shadow-[0_20px_50px_rgba(0,0,0,0.75)] text-white pointer-events-auto animate-in fade-in slide-in-from-right-4 duration-300 touch-pan-y">
+    <div className="fixed top-16 sm:top-20 right-2 sm:right-6 z-50 w-[310px] max-w-[calc(100vw-1rem)] max-h-[clamp(280px,calc(100vh-17.5rem),480px)] overflow-y-auto overscroll-contain bg-[#06101f]/94 backdrop-blur-2xl border border-cyan-300/20 rounded-3xl p-4 sm:p-5 shadow-[0_20px_50px_rgba(0,0,0,0.75)] text-white pointer-events-auto animate-in fade-in slide-in-from-right-4 duration-300 touch-pan-y">
       {/* Header */}
       <div className="flex items-center justify-between pb-3.5 border-b border-white/10 mb-4">
         <div className="flex items-center gap-2">

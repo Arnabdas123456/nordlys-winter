@@ -16,7 +16,7 @@ export function WinterBackground() {
         decoding="sync"
         fetchPriority="high"
         draggable={false}
-        className="absolute inset-0 w-full h-full object-cover object-[58%_center] sm:object-center opacity-100"
+        className="absolute inset-0 w-full h-full object-cover object-[58%_center] landscape:object-center opacity-100"
       />
 
       {/* Layer 2: Subtle Readability Overlay (Preserves Christmas houses, lights, and snowy road) */}
