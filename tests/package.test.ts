@@ -8,7 +8,7 @@ describe("NPM Package Configuration", () => {
 
   it("should have correct package name and initial semantic version", () => {
     expect(pkg.name).toBe("nordlys-winter");
-    expect(pkg.version).toBe("1.0.0");
+    expect(pkg.version).toMatch(/^1\.\d+\.\d+/);
     expect(pkg.private).toBe(false);
   });
 

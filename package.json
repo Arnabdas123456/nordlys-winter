@@ -10,7 +10,8 @@
   ],
   "scripts": {
     "dev": "npm run dev --workspace=@nordlys/demo",
-    "build": "npm run build --workspace=nordlys-winter && npm run build --workspace=@nordlys/demo",
+    "build": "npm run build --workspace=@nordlys/demo",
+    "build:all": "npm run build --workspace=nordlys-winter && npm run build --workspace=@nordlys/demo",
     "build:package": "npm run build --workspace=nordlys-winter",
     "build:demo": "npm run build --workspace=@nordlys/demo",
     "test": "vitest run",

@@ -25,6 +25,12 @@
     "paths": {
       "@/*": [
         "./src/*"
+      ],
+      "nordlys-winter": [
+        "../../packages/nordlys-winter/src/index.ts"
+      ],
+      "nordlys-winter/styles.css": [
+        "../../packages/nordlys-winter/src/styles/index.css"
       ]
     }
   },
